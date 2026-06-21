@@ -1,9 +1,12 @@
 import express from 'express';
 import { pool } from './db';
 import { ideaSchema, idParamSchema, listQuerySchema, formatZodError } from './schemas';
+import swaggerUi from 'swagger-ui-express';
+import { openApiSpec } from './openapi';
 
 const app = express();
 app.use(express.json());
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(openApiSpec));
 
 const PORT = process.env.PORT || 3000;
 

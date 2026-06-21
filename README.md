@@ -71,6 +71,14 @@ A small REST API for storing and managing ideas, built from scratch as a portfol
 | PUT    | /ideas/:id | Update an idea     |
 | DELETE | /ideas/:id | Delete an idea     |
 
+## API documentation
+
+With the server running, interactive Swagger UI is available at:
+
+http://localhost:3000/api-docs
+
+It documents every endpoint and lets you send requests directly from the browser.
+
 ### Idea fields
 
 | Field       | Type      | Notes                             |

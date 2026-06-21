@@ -1,6 +1,5 @@
 import { z } from 'zod';
 
-// Shape of a valid idea coming in via POST or PUT
 export const ideaSchema = z.object({
   title: z
     .string()
@@ -10,12 +9,18 @@ export const ideaSchema = z.object({
   status: z.enum(['spark', 'lit', 'archived']).default('spark'),
 });
 
-// Shape of a valid :id URL parameter
 export const idParamSchema = z.object({
   id: z.coerce.number().int().positive(),
 });
 
-// Turn a Zod error into a clean list of { field, message }
+export const listQuerySchema = z.object({
+  status: z.enum(['spark', 'lit', 'archived']).optional(),
+  sort: z.enum(['id', 'title', 'created_at']).default('id'),
+  order: z.enum(['asc', 'desc']).default('asc'),
+  limit: z.coerce.number().int().positive().max(100).default(10),
+  offset: z.coerce.number().int().min(0).default(0),
+});
+
 export function formatZodError(error: z.ZodError) {
   return error.issues.map((issue) => ({
     field: issue.path.join('.'),

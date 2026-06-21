@@ -1,6 +1,6 @@
 import express from 'express';
 import { pool } from './db';
-import { ideaSchema, idParamSchema, formatZodError } from './schemas';
+import { ideaSchema, idParamSchema, listQuerySchema, formatZodError } from './schemas';
 
 const app = express();
 app.use(express.json());
@@ -32,10 +32,32 @@ app.post('/ideas', async (req, res) => {
   }
 });
 
-// Get all ideas
+// Get all ideas (with filtering, sorting, pagination)
 app.get('/ideas', async (req, res) => {
+  const parsed = listQuerySchema.safeParse(req.query);
+  if (!parsed.success) {
+    res.status(400).json({ error: 'Invalid query', details: formatZodError(parsed.error) });
+    return;
+  }
+  const { status, sort, order, limit, offset } = parsed.data;
+
+  const values: unknown[] = [];
+  let whereClause = '';
+  if (status) {
+    values.push(status);
+    whereClause = `WHERE status = $${values.length}`;
+  }
+
+  values.push(limit);
+  const limitParam = `$${values.length}`;
+  values.push(offset);
+  const offsetParam = `$${values.length}`;
+
+  // sort and order are safe to inline because Zod restricted them to a fixed allowlist
+  const query = `SELECT * FROM ideas ${whereClause} ORDER BY ${sort} ${order} LIMIT ${limitParam} OFFSET ${offsetParam}`;
+
   try {
-    const result = await pool.query('SELECT * FROM ideas ORDER BY id');
+    const result = await pool.query(query, values);
     res.json(result.rows);
   } catch (err) {
     console.error(err);

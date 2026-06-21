@@ -1,0 +1,29 @@
+info:
+  name: Get_idea_by_ID_not_found(404)
+  type: http
+  seq: 11
+
+http:
+  method: GET
+  url: http://localhost:3000/ideas/999
+  auth: inherit
+
+runtime:
+  scripts:
+    - type: tests
+      code: |-
+        const body = res.getBody();
+
+        test("Status code is 404", function () {
+          expect(res.getStatus()).to.equal(404);
+        });
+
+        test("Returns the not-found message", function () {
+          expect(body.error).to.equal("Idea not found");
+        });
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

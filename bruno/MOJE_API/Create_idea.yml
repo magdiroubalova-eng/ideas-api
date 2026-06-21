@@ -1,0 +1,23 @@
+info:
+  name: Create_idea
+  type: http
+  seq: 1
+
+http:
+  method: POST
+  url: http://localhost:3000/ideas
+  body:
+    type: json
+    data: |-
+      {
+        "title": "Build my own API",
+        "description": "My first idea stored in Postgres",
+        "status": "spark"
+      }
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

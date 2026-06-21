@@ -1,0 +1,41 @@
+info:
+  name: "GET_idea_by_ID "
+  type: http
+  seq: 5
+
+http:
+  method: GET
+  url: http://localhost:3000/ideas/1
+  auth: inherit
+
+runtime:
+  scripts:
+    - type: tests
+      code: |-
+        const body = res.getBody();
+
+        test("Status code is 200", function () {
+          expect(res.getStatus()).to.equal(200);
+        });
+
+        test("Returns the requested idea (id = 1)", function () {
+          expect(body.id).to.equal(1);
+        });
+
+        test("Idea has the expected fields", function () {
+          const expectedFields = ["title", "description", "status", "created_at"];
+          expectedFields.forEach((field) => {
+            expect(body).to.have.property(field);
+          });
+
+        test("Title is a non-empty string", function () {
+          expect(body.title).to.be.a("string");
+          expect(body.title.length).to.be.above(0);
+        });
+          });
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

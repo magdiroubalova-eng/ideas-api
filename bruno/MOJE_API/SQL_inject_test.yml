@@ -1,0 +1,21 @@
+info:
+  name: SQL_inject_test
+  type: http
+  seq: 4
+
+http:
+  method: POST
+  url: http://localhost:3000/ideas
+  body:
+    type: json
+    data: |-
+      {
+        "title": "'); DROP TABLE ideas; --"
+      }
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

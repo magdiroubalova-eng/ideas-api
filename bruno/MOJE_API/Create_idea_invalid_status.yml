@@ -1,0 +1,41 @@
+info:
+  name: Create_idea_invalid_status
+  type: http
+  seq: 3
+
+http:
+  method: POST
+  url: http://localhost:3000/ideas
+  body:
+    type: json
+    data: |-
+      { 
+      "title": "x",
+      "status": "banana" 
+      }
+  auth: inherit
+
+runtime:
+  scripts:
+    - type: tests
+      code: |-
+        const body = res.getBody();
+
+        test("Status code is 400", function () {
+          expect(res.getStatus()).to.equal(400);
+        });
+
+        test("Reports a validation error", function () {
+          expect(body.error).to.equal("Validation failed");
+        });
+
+        test("Flags the status field", function () {
+          const statusError = body.details.find((d) => d.field === "status");
+          expect(statusError).to.exist;
+        });
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

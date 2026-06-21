@@ -1,0 +1,48 @@
+info:
+  name: Update_idea
+  type: http
+  seq: 6
+
+http:
+  method: PUT
+  url: http://localhost:3000/ideas/1
+  body:
+    type: json
+    data: |-
+      {
+      "title": "Build my own API", 
+      "description": "Now with full CRUD", 
+      "status": "lit"
+      }
+  auth: inherit
+
+runtime:
+  scripts:
+    - type: tests
+      code: |-
+        const body = res.getBody();
+        const expected = {
+          title: "Build my own API",
+          description: "Now with full CRUD",
+          status: "lit",
+        };
+
+        test("Status code is 200", function () {
+          expect(res.getStatus()).to.equal(200);
+        });
+
+        test("Updated the correct idea (id = 1)", function () {
+          expect(body.id).to.equal(1);
+        });
+
+        test("Fields reflect the update", function () {
+          Object.keys(expected).forEach((field) => {
+            expect(body[field]).to.equal(expected[field]);
+          });
+        });
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

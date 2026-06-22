@@ -41,7 +41,7 @@ A small REST API for storing and managing ideas, built from scratch as a portfol
      id SERIAL PRIMARY KEY,
      title VARCHAR(200) NOT NULL,
      description TEXT,
-     status VARCHAR(20) NOT NULL DEFAULT 'spark',
+     status VARCHAR(20) NOT NULL DEFAULT 'ready',
      created_at TIMESTAMPTZ NOT NULL DEFAULT now()
    );
 ```
@@ -86,7 +86,7 @@ It documents every endpoint and lets you send requests directly from the browser
 | id          | integer   | Auto-generated                    |
 | title       | string    | Required, 1–200 characters        |
 | description | string    | Optional                          |
-| status      | string    | One of `spark`, `lit`, `archived` |
+| status      | string    | One of `ready`, `in_progress`, `done` |
 | created_at  | timestamp | Auto-generated                    |
 
 ## Testing

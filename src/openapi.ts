@@ -1,3 +1,4 @@
+import { STATUSES } from './schemas';
 export const openApiSpec = {
   openapi: '3.0.3',
   info: {
@@ -14,7 +15,7 @@ export const openApiSpec = {
           id: { type: 'integer', example: 1 },
           title: { type: 'string', example: 'Build my own API' },
           description: { type: 'string', nullable: true, example: 'A portfolio project' },
-          status: { type: 'string', enum: ['spark', 'lit', 'archived'], example: 'spark' },
+          status: { type: 'string', enum: STATUSES, example: STATUSES[0] },
           created_at: { type: 'string', format: 'date-time' },
         },
       },
@@ -24,7 +25,7 @@ export const openApiSpec = {
         properties: {
           title: { type: 'string', minLength: 1, maxLength: 200 },
           description: { type: 'string', maxLength: 2000 },
-          status: { type: 'string', enum: ['spark', 'lit', 'archived'] },
+          status: { type: 'string', enum: STATUSES },
         },
       },
       Error: {
@@ -53,7 +54,7 @@ export const openApiSpec = {
       get: {
         summary: 'List ideas',
         parameters: [
-          { name: 'status', in: 'query', schema: { type: 'string', enum: ['spark', 'lit', 'archived'] } },
+          { name: 'status', in: 'query', schema: { type: 'string', enum: STATUSES } },
           { name: 'sort', in: 'query', schema: { type: 'string', enum: ['id', 'title', 'created_at'], default: 'id' } },
           { name: 'order', in: 'query', schema: { type: 'string', enum: ['asc', 'desc'], default: 'asc' } },
           { name: 'limit', in: 'query', schema: { type: 'integer', default: 10, maximum: 100 } },

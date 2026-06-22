@@ -1,5 +1,6 @@
 import { faker } from '@faker-js/faker';
 import { pool } from './db';
+import { STATUSES } from './schemas';
 
 const ideaPrompts = [
   { title: 'A habit tracker that rewards streaks', description: 'Turn daily habits into a visible streak, with small rewards for staying consistent.' },
@@ -34,14 +35,12 @@ const ideaPrompts = [
   { title: 'A portfolio site generator for career switchers', description: 'Turn a new skill set and projects into a clean portfolio in minutes.' },
 ];
 
-const statuses = ['spark', 'lit', 'archived'] as const;
-
 async function seed() {
   // Reset the table so re-running gives a clean, reproducible dataset
   await pool.query('TRUNCATE TABLE ideas RESTART IDENTITY');
 
   for (const idea of ideaPrompts) {
-    const status = faker.helpers.arrayElement(statuses);
+    const status = faker.helpers.arrayElement(STATUSES);
     const createdAt = faker.date.past();
     await pool.query(
       'INSERT INTO ideas (title, description, status, created_at) VALUES ($1, $2, $3, $4)',

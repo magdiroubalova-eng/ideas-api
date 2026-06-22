@@ -1,5 +1,7 @@
 import express from 'express';
+import pinoHttp from 'pino-http';
 import { pool } from './db';
+import { logger } from './logger';
 import { ideaSchema, idParamSchema, listQuerySchema, formatZodError } from './schemas';
 import swaggerUi from 'swagger-ui-express';
 import { openApiSpec } from './openapi';
@@ -7,6 +9,7 @@ import { requireAuth } from './auth';
 
 const app = express();
 app.use(express.json());
+app.use(pinoHttp({ logger }));
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(openApiSpec));
 
 const PORT = process.env.PORT || 3000;
@@ -31,7 +34,7 @@ app.post('/ideas', requireAuth, async (req, res) => {
     );
     res.status(201).json(result.rows[0]);
   } catch (err) {
-    console.error(err);
+    req.log.error(err);
     res.status(500).json({ error: 'Something went wrong' });
   }
 });
@@ -57,14 +60,13 @@ app.get('/ideas', async (req, res) => {
   values.push(offset);
   const offsetParam = `$${values.length}`;
 
-  // sort and order are safe to inline because Zod restricted them to a fixed allowlist
   const query = `SELECT * FROM ideas ${whereClause} ORDER BY ${sort} ${order} LIMIT ${limitParam} OFFSET ${offsetParam}`;
 
   try {
     const result = await pool.query(query, values);
     res.json(result.rows);
   } catch (err) {
-    console.error(err);
+    req.log.error(err);
     res.status(500).json({ error: 'Something went wrong' });
   }
 });
@@ -86,7 +88,7 @@ app.get('/ideas/:id', async (req, res) => {
     }
     res.json(result.rows[0]);
   } catch (err) {
-    console.error(err);
+    req.log.error(err);
     res.status(500).json({ error: 'Something went wrong' });
   }
 });
@@ -118,7 +120,7 @@ app.put('/ideas/:id', requireAuth, async (req, res) => {
     }
     res.json(result.rows[0]);
   } catch (err) {
-    console.error(err);
+    req.log.error(err);
     res.status(500).json({ error: 'Something went wrong' });
   }
 });
@@ -140,17 +142,17 @@ app.delete('/ideas/:id', requireAuth, async (req, res) => {
     }
     res.status(204).send();
   } catch (err) {
-    console.error(err);
+    req.log.error(err);
     res.status(500).json({ error: 'Something went wrong' });
   }
 });
 
 app.listen(PORT, async () => {
-  console.log(`Server running on http://localhost:${PORT}`);
+  logger.info(`Server running on http://localhost:${PORT}`);
   try {
     const result = await pool.query('SELECT now()');
-    console.log('Database connected. Server time:', result.rows[0].now);
+    logger.info({ serverTime: result.rows[0].now }, 'Database connected');
   } catch (err) {
-    console.error('Database connection FAILED:', err);
+    logger.error(err, 'Database connection FAILED');
   }
 });

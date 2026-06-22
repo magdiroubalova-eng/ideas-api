@@ -9,7 +9,20 @@ import { requireAuth } from './auth';
 
 const app = express();
 app.use(express.json());
-app.use(pinoHttp({ logger }));
+app.use(
+  pinoHttp({
+    logger,
+    // Log a lean summary instead of dumping full request/response objects
+    serializers: {
+      req(req) {
+        return { id: req.id, method: req.method, url: req.url };
+      },
+      res(res) {
+        return { statusCode: res.statusCode };
+      },
+    },
+  })
+);
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(openApiSpec));
 
 const PORT = process.env.PORT || 3000;

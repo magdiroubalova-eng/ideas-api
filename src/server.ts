@@ -3,6 +3,7 @@ import { pool } from './db';
 import { ideaSchema, idParamSchema, listQuerySchema, formatZodError } from './schemas';
 import swaggerUi from 'swagger-ui-express';
 import { openApiSpec } from './openapi';
+import { requireAuth } from './auth';
 
 const app = express();
 app.use(express.json());
@@ -15,7 +16,7 @@ app.get('/health', (req, res) => {
 });
 
 // Create a new idea
-app.post('/ideas', async (req, res) => {
+app.post('/ideas', requireAuth, async (req, res) => {
   const parsed = ideaSchema.safeParse(req.body);
   if (!parsed.success) {
     res.status(400).json({ error: 'Validation failed', details: formatZodError(parsed.error) });
@@ -91,7 +92,7 @@ app.get('/ideas/:id', async (req, res) => {
 });
 
 // Update an idea by id
-app.put('/ideas/:id', async (req, res) => {
+app.put('/ideas/:id', requireAuth, async (req, res) => {
   const idParsed = idParamSchema.safeParse(req.params);
   if (!idParsed.success) {
     res.status(400).json({ error: 'Invalid id', details: formatZodError(idParsed.error) });
@@ -123,7 +124,7 @@ app.put('/ideas/:id', async (req, res) => {
 });
 
 // Delete an idea by id
-app.delete('/ideas/:id', async (req, res) => {
+app.delete('/ideas/:id', requireAuth, async (req, res) => {
   const idParsed = idParamSchema.safeParse(req.params);
   if (!idParsed.success) {
     res.status(400).json({ error: 'Invalid id', details: formatZodError(idParsed.error) });

@@ -1,4 +1,5 @@
 import { STATUSES } from './schemas';
+
 export const openApiSpec = {
   openapi: '3.0.3',
   info: {
@@ -8,6 +9,9 @@ export const openApiSpec = {
   },
   servers: [{ url: 'http://localhost:3000' }],
   components: {
+    securitySchemes: {
+      bearerAuth: { type: 'http', scheme: 'bearer' },
+    },
     schemas: {
       Idea: {
         type: 'object',
@@ -36,10 +40,7 @@ export const openApiSpec = {
             type: 'array',
             items: {
               type: 'object',
-              properties: {
-                field: { type: 'string' },
-                message: { type: 'string' },
-              },
+              properties: { field: { type: 'string' }, message: { type: 'string' } },
             },
           },
         },
@@ -67,10 +68,12 @@ export const openApiSpec = {
       },
       post: {
         summary: 'Create an idea',
+        security: [{ bearerAuth: [] }],
         requestBody: { required: true, content: { 'application/json': { schema: { $ref: '#/components/schemas/IdeaInput' } } } },
         responses: {
           '201': { description: 'Created', content: { 'application/json': { schema: { $ref: '#/components/schemas/Idea' } } } },
           '400': { description: 'Validation failed', content: { 'application/json': { schema: { $ref: '#/components/schemas/Error' } } } },
+          '401': { description: 'Authentication required' },
         },
       },
     },
@@ -86,20 +89,24 @@ export const openApiSpec = {
       },
       put: {
         summary: 'Update an idea',
+        security: [{ bearerAuth: [] }],
         parameters: [{ name: 'id', in: 'path', required: true, schema: { type: 'integer' } }],
         requestBody: { required: true, content: { 'application/json': { schema: { $ref: '#/components/schemas/IdeaInput' } } } },
         responses: {
           '200': { description: 'Updated', content: { 'application/json': { schema: { $ref: '#/components/schemas/Idea' } } } },
           '400': { description: 'Validation failed' },
+          '401': { description: 'Authentication required' },
           '404': { description: 'Not found' },
         },
       },
       delete: {
         summary: 'Delete an idea',
+        security: [{ bearerAuth: [] }],
         parameters: [{ name: 'id', in: 'path', required: true, schema: { type: 'integer' } }],
         responses: {
           '204': { description: 'Deleted' },
           '400': { description: 'Invalid id' },
+          '401': { description: 'Authentication required' },
           '404': { description: 'Not found' },
         },
       },

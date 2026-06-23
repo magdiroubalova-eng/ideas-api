@@ -1,0 +1,67 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: ideas_db
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    env:
+      DATABASE_URL: postgresql://postgres:postgres@localhost:5432/ideas_db
+      API_TOKEN: test-token
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Type-check
+        run: npx tsc --noEmit
+
+      - name: Set up database schema
+        run: npm run init-db
+
+      - name: Seed sample data
+        run: npm run seed
+
+      - name: Build
+        run: npm run build
+
+      - name: Start the API
+        env:
+          NODE_ENV: production
+        run: |
+          node dist/server.js &
+          for i in $(seq 1 30); do
+            if curl -sf http://localhost:3000/health > /dev/null; then
+              echo "API is up"; break
+            fi
+            echo "waiting for API..."; sleep 1
+          done
+
+      - name: Run Bruno API tests
+        run: npx --yes @usebruno/cli run bruno/MOJE_API -r --env-var token=$API_TOKEN

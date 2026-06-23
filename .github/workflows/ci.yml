@@ -63,5 +63,6 @@ jobs:
             echo "waiting for API..."; sleep 1
           done
 
-      - name: Run Bruno API tests
-        run: npx --yes @usebruno/cli run bruno/MOJE_API -r --env-var token=$API_TOKEN
+      - name: Run Bruno API tests 
+        working-directory: bruno/MOJE_API
+        run: npx --yes @usebruno/cli run . -r --env-var token=$API_TOKEN

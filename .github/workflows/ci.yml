@@ -65,4 +65,4 @@ jobs:
 
       - name: Run Bruno API tests 
         working-directory: bruno/MOJE_API
-        run: npx --yes @usebruno/cli run . -r --env-var token=$API_TOKEN
+        run: npx --yes @usebruno/cli run . -r --env ci --env-var token=$API_TOKEN

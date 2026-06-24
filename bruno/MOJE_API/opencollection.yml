@@ -17,7 +17,7 @@ config:
 request:
   auth:
     type: bearer
-    token: ATATT3xFfGF0bUCWjshGdEx-TFVxnFTp4SCbOVvV4lqNG4kof3VMY_IDHIOEHSN749039283nskjsjhBKSdnNDK_34
+    token: "{{token}}"
 bundled: false
 extensions:
   bruno:

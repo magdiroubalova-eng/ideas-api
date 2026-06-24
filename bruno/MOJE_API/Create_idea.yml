@@ -10,11 +10,47 @@ http:
     type: json
     data: |-
       {
-        "title": "Build my own API",
+        "title": "{{ideaTitle}}",
         "description": "My first idea stored in Postgres",
-        "status": "spark"
+        "status": "ready"
       }
   auth: inherit
+
+runtime:
+  scripts:
+    - type: before-request
+      code: |-
+        const adjectives = ["smart", "tiny", "bold", "quiet", "clever", "daily"];
+        const nouns = ["tracker", "planner", "map", "timer", "journal", "dashboard"];
+        const pick = (arr) => arr[Math.floor(Math.random() * arr.length)];
+
+        const title = `A ${pick(adjectives)} ${pick(nouns)} ${Date.now()}`;
+        bru.setVar("ideaTitle", title);
+    - type: tests
+      code: |-
+        const body = res.getBody();
+
+        bru.setVar("deleteTargetId", body.id);
+
+        test("Status code is 201", function () {
+          expect(res.getStatus()).to.equal(201);
+        });
+
+        test("Returns a new idea with a numeric id", function () {
+          expect(body.id).to.be.a("number");
+        });
+
+        test("Echoes back the title we sent", function () {
+          expect(body.title).to.equal(bru.getVar("ideaTitle"));
+        });
+
+        test("Has exactly the expected fields", function () {
+          expect(body).to.have.all.keys("id", "title", "description", "status", "created_at");
+        });
+
+        test("Status is one of the allowed values", function () {
+          expect(body.status).to.be.oneOf(["ready", "in_progress", "done"]);
+        });
 
 settings:
   encodeUrl: true

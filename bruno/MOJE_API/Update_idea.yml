@@ -1,7 +1,7 @@
 info:
   name: Update_idea
   type: http
-  seq: 6
+  seq: 7
 
 http:
   method: PUT
@@ -12,7 +12,7 @@ http:
       {
       "title": "Build my own API", 
       "description": "Now with full CRUD", 
-      "status": "lit"
+      "status": "done"
       }
   auth: inherit
 
@@ -24,7 +24,7 @@ runtime:
         const expected = {
           title: "Build my own API",
           description: "Now with full CRUD",
-          status: "lit",
+          status: "done",
         };
 
         test("Status code is 200", function () {

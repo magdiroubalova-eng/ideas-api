@@ -1,11 +1,11 @@
 info:
   name: Delete_idea
   type: http
-  seq: 8
+  seq: 9
 
 http:
   method: DELETE
-  url: http://localhost:3000/ideas/2
+  url: http://localhost:3000/ideas/{{deleteTargetId}}
   auth: inherit
 
 runtime:

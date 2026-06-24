@@ -1,0 +1,58 @@
+info:
+  name: Create_idea_schema_validation
+  type: http
+  seq: 2
+
+http:
+  method: POST
+  url: http://localhost:3000/ideas
+  body:
+    type: json
+    data: |-
+      {
+        "title": "Schema validation test idea",
+        "description": "Checking the response matches the Idea schema",
+        "status": "ready"
+      }
+  auth: inherit
+
+runtime:
+  scripts:
+    - type: tests
+      code: |-
+        const body = res.getBody();
+
+        test("Status code is 201", function () {
+          expect(res.getStatus()).to.equal(201);
+        });
+
+        test("Has exactly the expected fields", function () {
+          expect(body).to.have.all.keys("id", "title", "description", "status", "created_at");
+        });
+
+        test("Field types are correct", function () {
+          expect(body.id).to.be.a("number");
+          expect(body.title).to.be.a("string");
+          expect(body.status).to.be.a("string");
+          expect(body.created_at).to.be.a("string");
+          expect(body.description === null || typeof body.description === "string").to.equal(true);
+        });
+
+        test("id is a positive integer", function () {
+          expect(Number.isInteger(body.id)).to.equal(true);
+          expect(body.id).to.be.above(0);
+        });
+
+        test("status is an allowed value", function () {
+          expect(["ready", "in_progress", "done"]).to.include(body.status);
+        });
+
+        test("created_at is a valid date", function () {
+          expect(Number.isNaN(Date.parse(body.created_at))).to.equal(false);
+        });
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

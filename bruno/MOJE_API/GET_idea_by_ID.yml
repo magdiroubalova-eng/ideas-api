@@ -1,7 +1,7 @@
 info:
   name: "GET_idea_by_ID "
   type: http
-  seq: 5
+  seq: 6
 
 http:
   method: GET

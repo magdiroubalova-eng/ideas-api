@@ -1,7 +1,7 @@
 info:
   name: Get_idea_by_ID_invalid_id
   type: http
-  seq: 10
+  seq: 11
 
 http:
   method: GET

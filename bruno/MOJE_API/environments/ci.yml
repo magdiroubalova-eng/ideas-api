@@ -1,0 +1,4 @@
+name: ci
+variables:
+  - name: token
+    value: test-token
